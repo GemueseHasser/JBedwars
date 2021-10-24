@@ -2,8 +2,8 @@ name: '${project.name}'
 description: '${project.description}'
 version: '${project.version}'
 load: 'POSTWORLD'
-author: 'Jonas0206 | Gemuese_Hasser'
-authors: ['Jonas0206 | Gemuese_Hasser']
+author: 'Gemuese_Hasser'
+authors: ['Gemuese_Hasser']
 website: '${project.url}'
 main: '${project.groupId}.${project.artifactId}.${project.name}'
 depend: []
