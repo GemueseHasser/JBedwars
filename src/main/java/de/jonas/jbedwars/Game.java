@@ -34,9 +34,13 @@ public final class Game {
     @Setter
     private GameType gameType;
     /** Das rote Team. */
-    private final Team red = new Team(1);
+    @Getter
+    @NotNull
+    private final Team teamRed = new Team(1);
     /** Das blaue Team. */
-    private final Team blue = new Team(1);
+    @Getter
+    @NotNull
+    private final Team teamBlue = new Team(1);
     /** Alle mitspielenden Spieler. */
     @Getter
     private final List<Player> players = new ArrayList<>();
@@ -107,16 +111,16 @@ public final class Game {
 
         // check teams
         for (@NotNull final Player player : players) {
-            if (this.red.getMates().contains(player) || this.blue.getMates().contains(player)) {
+            if (this.teamRed.getMates().contains(player) || this.teamBlue.getMates().contains(player)) {
                 continue;
             }
 
-            if (this.red.isFull()) {
-                this.blue.getMates().add(player);
+            if (this.teamRed.isFull()) {
+                this.teamBlue.getMates().add(player);
                 continue;
             }
 
-            this.red.getMates().add(player);
+            this.teamRed.getMates().add(player);
         }
     }
 

@@ -24,9 +24,15 @@ public final class GameTask extends BukkitRunnable {
         // check current game state
         switch (game.getGameType()) {
             case WAITING:
-                final long untilStart = Game.WAITING_TIME_IN_SECONDS - Duration
-                    .between(game.getBasicStartMoment(), Instant.now())
-                    .toSeconds();
+                final long untilStart;
+
+                if (!(game.getTeamRed().isFull() && game.getTeamBlue().isFull())) {
+                    untilStart = Game.WAITING_TIME_IN_SECONDS;
+                } else {
+                    untilStart = Game.WAITING_TIME_IN_SECONDS - Duration
+                        .between(game.getBasicStartMoment(), Instant.now())
+                        .toSeconds();
+                }
 
                 final ComponentBuilder builder = new ComponentBuilder()
                     .append(
