@@ -1,8 +1,13 @@
 package de.jonas;
 
+import de.jonas.jbedwars.Game;
 import lombok.Getter;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 
 /**
  * Die Haupt- und Main-Klasse des Plugins. In dieser Klasse wird das gesamte Plugin initialisiert und beim Server
@@ -14,11 +19,18 @@ public final class JBedwars extends JavaPlugin {
     //<editor-fold desc="STATIC FIELDS">
     /** Der Prefix des {@link JBedwars Plugins}. */
     @Getter
-    private static String prefix;
+    private static BaseComponent[] prefix;
     /** Die Instanz-Variable, womit man auf das {@link JBedwars Plugin} zugreifen kann. */
     @Getter
     private static JBedwars instance;
     //</editor-fold>
+
+    //<editor-fold desc="LOCAL FIELDS">
+    /** Das {@link Game Spiel} bzw. dessen Basis-Konstrukt. */
+    @Getter
+    private Game game;
+    //</editor-fold>
+
 
     @Override
     public void onEnable() {
@@ -29,6 +41,9 @@ public final class JBedwars extends JavaPlugin {
 
         // declare plugin prefix
         prefix = getLoadedPrefix();
+
+        // create game
+        this.game = new Game();
     }
 
     /**
@@ -36,9 +51,20 @@ public final class JBedwars extends JavaPlugin {
      *
      * @return Gibt den prefix des Plugins zurück.
      */
-    private String getLoadedPrefix() {
-        return ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "["
-            + ChatColor.RED + "JBedwars"
-            + ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "]";
+    private BaseComponent[] getLoadedPrefix() {
+        return new ComponentBuilder()
+            .append(
+                "[",
+                NONE
+            ).color(ChatColor.DARK_GRAY).bold(true)
+            .append(
+                "JBedwars",
+                NONE
+            ).color(ChatColor.RED)
+            .append(
+                "]",
+                NONE
+            ).color(ChatColor.DARK_GRAY).bold(true)
+            .create();
     }
 }
