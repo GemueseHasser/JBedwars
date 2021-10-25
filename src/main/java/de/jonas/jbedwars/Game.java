@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static de.jonas.jbedwars.constant.GameType.GAME;
+import static de.jonas.jbedwars.constant.GameType.POST_GAME;
 import static de.jonas.jbedwars.constant.GameType.WAITING;
 
 public final class Game {
@@ -122,6 +123,14 @@ public final class Game {
 
             this.teamRed.getMates().add(player);
         }
+    }
+
+    /**
+     * Stoppt das Spiel und versetzt das Spiel in den Modus {@code POST_GAME}.
+     */
+    public void stopGame() {
+        // set game type to post game
+        this.setGameType(POST_GAME);
     }
 
 }
