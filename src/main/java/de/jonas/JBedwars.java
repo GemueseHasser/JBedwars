@@ -5,7 +5,12 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 
@@ -14,7 +19,7 @@ import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
  * registriert. Diese Klasse wird vom Server zur Initialisierung des Plugins aufgerufen, da diese vom {@link JavaPlugin}
  * abgeleitet wird.
  */
-public final class JBedwars extends JavaPlugin {
+public final class JBedwars extends JavaPlugin implements Listener {
 
     //<editor-fold desc="STATIC FIELDS">
     /** Der Prefix des {@link JBedwars Plugins}. */
@@ -44,6 +49,8 @@ public final class JBedwars extends JavaPlugin {
 
         // create game
         this.game = new Game();
+
+        Bukkit.getPluginManager().registerEvents(this, this);
     }
 
     /**
@@ -66,5 +73,10 @@ public final class JBedwars extends JavaPlugin {
                 NONE
             ).color(ChatColor.DARK_GRAY).bold(true)
             .create();
+    }
+
+    @EventHandler
+    public void onJoin(@NotNull final PlayerJoinEvent e) {
+        game.join(e.getPlayer());
     }
 }

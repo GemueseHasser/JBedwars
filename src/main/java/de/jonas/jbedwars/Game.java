@@ -26,6 +26,8 @@ public final class Game {
     public static final int GAME_TIME_IN_MINUTES = 15;
     /** Die Anzahl an Ticks, die eine Sekunde beinhaltet. */
     private static final int TICKS_PER_SECOND = 20;
+    /** Die Anzahl an Spielern, die insgesamt mitspielen dürfen. */
+    private static final int MAX_OVERALL_PLAYERS = 2;
     //</editor-fold>
 
 
@@ -37,11 +39,11 @@ public final class Game {
     /** Das rote Team. */
     @Getter
     @NotNull
-    private final Team teamRed = new Team(1);
+    private final Team teamRed = new Team(MAX_OVERALL_PLAYERS / 2);
     /** Das blaue Team. */
     @Getter
     @NotNull
-    private final Team teamBlue = new Team(1);
+    private final Team teamBlue = new Team(MAX_OVERALL_PLAYERS / 2);
     /** Alle mitspielenden Spieler. */
     @Getter
     private final List<Player> players = new ArrayList<>();
@@ -50,6 +52,7 @@ public final class Game {
     private Instant gameStartMoment;
     /** Der Moment, zu dem das Spiel überhaupt aktiv wird, also sobald der erste Spieler dem Spiel beitritt. */
     @Getter
+    @Setter
     private Instant basicStartMoment;
     /** Der {@link GameTask}, welcher dann läuft, sobald ein Spieler dem Spiel beigetreten ist. */
     private GameTask gameTask;
@@ -79,9 +82,6 @@ public final class Game {
                 0,
                 TICKS_PER_SECOND
             );
-
-            // set basic start moment to now
-            this.basicStartMoment = Instant.now();
         }
 
         players.add(player);
@@ -131,6 +131,15 @@ public final class Game {
     public void stopGame() {
         // set game type to post game
         this.setGameType(POST_GAME);
+    }
+
+    /**
+     * Gibt an, ob das Spiel 'voll' ist, also ob sich genug Spieler im Spiel befinden, damit das Spiel starten kann.
+     *
+     * @return {@code true}, wenn sich genug Spieler im Spiel befinden, ansonsten {@code false}.
+     */
+    public boolean isFull() {
+        return this.players.size() >= MAX_OVERALL_PLAYERS;
     }
 
 }

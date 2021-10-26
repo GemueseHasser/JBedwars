@@ -12,7 +12,6 @@ import java.time.Duration;
 import java.time.Instant;
 
 import static net.md_5.bungee.api.ChatMessageType.ACTION_BAR;
-import static net.md_5.bungee.api.ChatMessageType.SYSTEM;
 import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
 
 public final class GameTask extends BukkitRunnable {
@@ -25,37 +24,49 @@ public final class GameTask extends BukkitRunnable {
         // check current game state
         switch (game.getGameType()) {
             case WAITING:
-                final long untilStart;
+                final ComponentBuilder message;
+
+                final long untilStartTime;
 
                 // check if teams are full (if game can start)
-                if (!(game.getTeamRed().isFull() && game.getTeamBlue().isFull())) {
-                    // set waiting time without calculating on default
-                    untilStart = Game.WAITING_TIME_IN_SECONDS;
+                if (!game.isFull()) {
+                    // set time to default
+                    untilStartTime = Game.WAITING_TIME_IN_SECONDS;
+
+                    // create waiting message
+                    message = new ComponentBuilder()
+                        .append(
+                            "Warten auf Spieler..."
+                        ).color(ChatColor.GRAY);
                 } else {
+                    if (game.getBasicStartMoment() == null) {
+                        game.setBasicStartMoment(Instant.now());
+                    }
                     // calculate time
-                    untilStart = Game.WAITING_TIME_IN_SECONDS - Duration
+                    untilStartTime = Game.WAITING_TIME_IN_SECONDS - Duration
                         .between(game.getBasicStartMoment(), Instant.now())
                         .toSeconds();
+
+                    // create waiting time message
+                    message = new ComponentBuilder()
+                        .append(
+                            "Das Spiel startet in ",
+                            NONE
+                        ).color(ChatColor.GRAY)
+                        .append(
+                            String.valueOf(untilStartTime),
+                            NONE
+                        ).color(ChatColor.GREEN).bold(true)
+                        .append(
+                            " Sekunden",
+                            NONE
+                        ).color(ChatColor.GRAY);
                 }
 
-                // create waiting time message
-                final ComponentBuilder waitingTime = new ComponentBuilder()
-                    .append(
-                        "Das Spiel startet in ",
-                        NONE
-                    ).color(ChatColor.GRAY)
-                    .append(
-                        String.valueOf(untilStart),
-                        NONE
-                    ).color(ChatColor.GREEN).bold(true)
-                    .append(
-                        " Sekunden",
-                        NONE
-                    ).color(ChatColor.GRAY);
 
                 for (@NotNull final Player player : game.getPlayers()) {
                     // check if waiting time is expired
-                    if (untilStart <= 0) {
+                    if (untilStartTime <= 0) {
                         // start game
                         game.startGame();
 
@@ -65,7 +76,7 @@ public final class GameTask extends BukkitRunnable {
                     // send waiting time message
                     player.spigot().sendMessage(
                         ACTION_BAR,
-                        waitingTime.create()
+                        message.create()
                     );
                 }
                 break;
@@ -76,21 +87,6 @@ public final class GameTask extends BukkitRunnable {
                     .between(game.getGameStartMoment(), Instant.now())
                     .toMinutes();
 
-                // create game time message
-                final ComponentBuilder gameTime = new ComponentBuilder()
-                    .append(
-                        "Das Spiel läuft noch ",
-                        NONE
-                    ).color(ChatColor.GRAY)
-                    .append(
-                        String.valueOf(remainingTime),
-                        NONE
-                    ).color(ChatColor.GREEN).bold(true)
-                    .append(
-                        " Sekunden",
-                        NONE
-                    ).color(ChatColor.GRAY);
-
                 for (@NotNull final Player player : game.getPlayers()) {
                     // check if game time is expired
                     if (remainingTime <= 0) {
@@ -100,11 +96,7 @@ public final class GameTask extends BukkitRunnable {
                         return;
                     }
 
-                    // send game time message
-                    player.spigot().sendMessage(
-                        SYSTEM,
-                        gameTime.create()
-                    );
+                    // update scoreboard
                 }
                 break;
 
