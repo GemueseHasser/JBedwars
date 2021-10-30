@@ -42,6 +42,7 @@ public final class GameTask extends BukkitRunnable {
                     if (game.getBasicStartMoment() == null) {
                         game.setBasicStartMoment(Instant.now());
                     }
+
                     // calculate time
                     untilStartTime = Game.WAITING_TIME_IN_SECONDS - Duration
                         .between(game.getBasicStartMoment(), Instant.now())
@@ -83,9 +84,13 @@ public final class GameTask extends BukkitRunnable {
 
             case GAME:
                 // get remaining time in minutes
-                final long remainingTime = Game.GAME_TIME_IN_MINUTES - Duration
+                final long remainingTime = Game.GAME_TIME_IN_SECONDS - Duration
                     .between(game.getGameStartMoment(), Instant.now())
-                    .toMinutes();
+                    .toSeconds();
+
+                // update time bar
+                game.getTimeBar().setTitle(game.getTimeBarTitle());
+                game.getTimeBar().setProgress(game.getTimeBarProgress());
 
                 for (@NotNull final Player player : game.getPlayers()) {
                     // check if game time is expired
