@@ -1,6 +1,7 @@
 package de.jonas;
 
 import de.jonas.jbedwars.Game;
+import de.jonas.jbedwars.object.Team;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -48,7 +49,12 @@ public final class JBedwars extends JavaPlugin implements Listener {
         prefix = getLoadedPrefix();
 
         // create game
-        this.game = new Game();
+        this.game = new Game(
+            new Team[] {
+                new Team(1),
+                new Team(1),
+            }
+        );
 
         Bukkit.getPluginManager().registerEvents(this, this);
     }

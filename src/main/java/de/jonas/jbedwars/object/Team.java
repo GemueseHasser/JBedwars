@@ -9,6 +9,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public final class Team {
+    @Getter
     private final int size;
     @Getter
     private final List<Player> mates = new ArrayList<>();

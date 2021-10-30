@@ -17,7 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static de.jonas.jbedwars.constant.GameType.GAME;
 import static de.jonas.jbedwars.constant.GameType.POST_GAME;
@@ -32,27 +34,21 @@ public final class Game {
     public static final int GAME_TIME_IN_SECONDS = 15 * 60;
     /** Die Anzahl an Ticks, die eine Sekunde beinhaltet. */
     private static final int TICKS_PER_SECOND = 20;
-    /** Die Anzahl an Spielern, die insgesamt mitspielen dürfen. */
-    private static final int MAX_OVERALL_PLAYERS = 2;
     //</editor-fold>
 
 
     //<editor-fold desc="LOCAL FIELDS">
+    /** Alle mitspielenden {@link Team Teams} dieses {@link Game Spiels}. */
+    @Getter
+    @NotNull
+    private final Team[] teams;
+    /** Alle mitspielenden Spieler. */
+    @Getter
+    private final List<Player> players = new ArrayList<>();
     /** Der Status, den das Spiel hat. */
     @Getter
     @Setter
     private GameType gameType;
-    /** Das rote Team. */
-    @Getter
-    @NotNull
-    private final Team teamRed = new Team(MAX_OVERALL_PLAYERS / 2);
-    /** Das blaue Team. */
-    @Getter
-    @NotNull
-    private final Team teamBlue = new Team(MAX_OVERALL_PLAYERS / 2);
-    /** Alle mitspielenden Spieler. */
-    @Getter
-    private final List<Player> players = new ArrayList<>();
     /** Der Moment, zu dem das Spiel startet. */
     @Getter
     private Instant gameStartMoment;
@@ -72,8 +68,11 @@ public final class Game {
     /**
      * Erzeugt eine neue und vollständig unabhängige Instanz eines {@link Game Spiels}. Das {@link Game Spiel} ist das
      * Basis-Konstrukt des gesamten {@link JBedwars Plugins} bzw. dessen Bedwars-Spiels.
+     *
+     * @param teams Die verschiedenen {@link Team Teams}, mit denen das Spiel initialisiert werden soll.
      */
-    public Game() {
+    public Game(@NotNull final Team[] teams) {
+        this.teams = teams;
         this.gameType = WAITING;
     }
 
@@ -131,16 +130,24 @@ public final class Game {
         for (@NotNull final Player player : players) {
             this.timeBar.addPlayer(player);
 
-            if (this.teamRed.getMates().contains(player) || this.teamBlue.getMates().contains(player)) {
+            // check if player is already in an team
+            final Optional<Team> containingTeam = Arrays.stream(this.teams)
+                .filter(team -> team.getMates().contains(player))
+                .findAny();
+
+            if (containingTeam.isPresent()) continue;
+
+            // put player in the next team
+            final Optional<Team> team = Arrays.stream(this.teams)
+                .filter(team1 -> !team1.isFull())
+                .findAny();
+
+            if (team.isEmpty()) {
+                this.players.remove(player);
                 continue;
             }
 
-            if (this.teamRed.isFull()) {
-                this.teamBlue.getMates().add(player);
-                continue;
-            }
-
-            this.teamRed.getMates().add(player);
+            team.get().getMates().add(player);
         }
     }
 
@@ -161,7 +168,8 @@ public final class Game {
      * @return {@code true}, wenn sich genug Spieler im Spiel befinden, ansonsten {@code false}.
      */
     public boolean isFull() {
-        return this.players.size() >= MAX_OVERALL_PLAYERS;
+        final int maxOverallPlayers = Arrays.stream(this.teams).mapToInt(Team::getSize).sum();
+        return this.players.size() >= maxOverallPlayers;
     }
 
     /**
