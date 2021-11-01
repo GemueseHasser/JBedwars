@@ -2,6 +2,7 @@ package de.jonas.jbedwars;
 
 import de.jonas.JBedwars;
 import de.jonas.jbedwars.constant.GameType;
+import de.jonas.jbedwars.handler.InventoryHandler;
 import de.jonas.jbedwars.object.Team;
 import de.jonas.jbedwars.task.GameTask;
 import lombok.Getter;
@@ -97,6 +98,8 @@ public final class Game {
         }
 
         this.players.add(player);
+
+        InventoryHandler.setWaitingInventory(player);
     }
 
     /**
@@ -122,6 +125,7 @@ public final class Game {
         // set game type to game
         this.setGameType(GAME);
 
+        // create boss-bar
         this.timeBar = Bukkit.createBossBar(
             getTimeBarTitle(),
             BarColor.PURPLE,
