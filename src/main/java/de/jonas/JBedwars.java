@@ -22,6 +22,14 @@ import static net.md_5.bungee.api.chat.ComponentBuilder.FormatRetention.NONE;
  */
 public final class JBedwars extends JavaPlugin implements Listener {
 
+    //<editor-fold desc="CONSTANTS">
+    /** Das rote Team. */
+    private static final Team RED = new Team(1, ChatColor.RED, "Team Rot");
+    /** Das blaue Team. */
+    private static final Team BLUE = new Team(1, ChatColor.BLUE, "Team Blau");
+    //</editor-fold>
+
+
     //<editor-fold desc="STATIC FIELDS">
     /** Der Prefix des {@link JBedwars Plugins}. */
     @Getter
@@ -51,8 +59,8 @@ public final class JBedwars extends JavaPlugin implements Listener {
         // create game
         this.game = new Game(
             new Team[] {
-                new Team(1),
-                new Team(1),
+                RED,
+                BLUE,
             }
         );
 

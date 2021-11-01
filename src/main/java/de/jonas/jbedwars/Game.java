@@ -25,6 +25,9 @@ import static de.jonas.jbedwars.constant.GameType.GAME;
 import static de.jonas.jbedwars.constant.GameType.POST_GAME;
 import static de.jonas.jbedwars.constant.GameType.WAITING;
 
+/**
+ * Ein {@link Game} ist ein individuelles Bedwars-Spiel, wovon auch mehrere initialisiert werden können.
+ */
 public final class Game {
 
     //<editor-fold desc="CONSTANTS">

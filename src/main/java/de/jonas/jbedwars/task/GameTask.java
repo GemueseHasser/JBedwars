@@ -65,15 +65,15 @@ public final class GameTask extends BukkitRunnable {
                 }
 
 
+                // check if waiting time is expired
+                if (untilStartTime <= 0) {
+                    // start game
+                    game.startGame();
+
+                    return;
+                }
+
                 for (@NotNull final Player player : game.getPlayers()) {
-                    // check if waiting time is expired
-                    if (untilStartTime <= 0) {
-                        // start game
-                        game.startGame();
-
-                        return;
-                    }
-
                     // send waiting time message
                     player.spigot().sendMessage(
                         ACTION_BAR,
@@ -92,20 +92,22 @@ public final class GameTask extends BukkitRunnable {
                 game.getTimeBar().setTitle(game.getTimeBarTitle());
                 game.getTimeBar().setProgress(game.getTimeBarProgress());
 
+
+                // check if game time is expired
+                if (remainingTime <= 0) {
+                    // stop the game
+                    game.stopGame();
+
+                    return;
+                }
+
                 for (@NotNull final Player player : game.getPlayers()) {
-                    // check if game time is expired
-                    if (remainingTime <= 0) {
-                        // stop the game
-                        game.stopGame();
-
-                        return;
-                    }
-
                     // update scoreboard
                 }
                 break;
 
             case POST_GAME:
+
                 break;
 
             default:
